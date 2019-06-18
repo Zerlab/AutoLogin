@@ -25,31 +25,16 @@ class com12306(object):
         chrome.find_element_by_id('J-userName').send_keys('your username')
         chrome.find_element_by_id('J-password').send_keys('your passwrod')
 
-
         time.sleep(3)
         #下载验证码图片
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36"}
-        params={
-            "login_site":"E",
-            "module": "login",
-            "rand": "sjrand",
-            "1560695033812":" ",
-            "callback": "jQuery191004825380654210143_1560694994611",
-            "_": "1560694994612"
-        }
-        session=requests.Session()
-        session.headers = headers
-        session.params = params
-
-        resp = session.get(url="https://kyfw.12306.cn/passport/captcha/captcha-image64", verify=False)
-
-        b64_image = re.findall(r'{"image":"(.*?)",', resp.text, re.S)[0]
-        check_res = base64.b64decode(b64_image)
+        pic_url = chrome.find_element_by_class_name('imgCode').get_attribute('src')
+        pic_url = str(pic_url).replace('data:image/jpg;base64,', '')
+        check_res = base64.b64decode(pic_url)
 
         # 将验证码保存到本地
         with  open('checkPic.jpg', 'wb')  as  f:
             f.write(check_res)
+            print('图片下载成功！')
 
         #解析验证码
         toolUrl='http://littlebigluo.qicp.net:47720/'
